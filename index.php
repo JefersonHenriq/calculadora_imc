@@ -5,26 +5,26 @@ require_once('app/Controllers/ControllerUsuario.php');
 
 $usuarioDao = new ControllerUsuario();
 
-if (!empty($_POST['nome']) && !empty($_POST['sexo']) && !empty($_POST['idade']) && !empty($_POST['peso']) && !empty($_POST['altura'])){
-    
-    $usuario = new Usuario($_POST['nome'], $_POST['sexo'], $_POST['idade'], $_POST['peso'], $_POST['altura']);
+if (!empty($_POST['nome']) && !empty($_POST['cpf']) && !empty($_POST['idade']) && !empty($_POST['candidato'])) {
 
-    $usuario->validarDados();
+    $usuario = new Usuario($_POST['nome'], $_POST['cpf'], $_POST['idade'], $_POST['candidato']);
+
+    $usuario->validarVotacao();
     //var_dump($usuario);
 
     if (empty($usuario->erro)) {
-        if ($usuario->getMsg() == "Abaixo do peso") {
-            $class = "alert-danger";
-        } elseif ($usuario->getMsg() == "Peso Normal") {
+        if ($usuario->getMsg() == "Usuário já votou") {
+            $class = "alert-warning";
+        } elseif ($usuario->getMsg() == "Voto computado com sucesso") {
             $class = "alert-success";
-        } elseif ($usuario->getMsg() == "Sobrepeso") {
+        } elseif ($usuario->getMsg() == "idade abaixo de 16 anos") {
             $class = "alert-warning";
         } else {
             $class = "alert-danger";
         }
         $usuarioDao->createUsuario($usuario);
     }
-} 
+}
 
 ?>
 
@@ -35,87 +35,62 @@ if (!empty($_POST['nome']) && !empty($_POST['sexo']) && !empty($_POST['idade']) 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de IMC</title>
+    <title>Votação</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-light p-5">
-    <div class="container border border-2 rounded-4 p-4 bg-white mb-5" style="max-width: 600px;">
+<body class="bg-primary p-5">
+    <div class="container border border-2 rounded-4 p-4 bg-white mb-5" style="max-width: 400px;">
         <form method="post">
-            <h1 class="mb-4 text-center">Calculadora IMC</h1>
+            <h1 class="mb-4 text-center fw-bold">VOTAÇÃO</h1>
             <div class="row">
                 <div class="mb-3">
-                    <label for="nome" class="form-label fw-bold">Informe seu nome</label>
-                    <input type="text" name="nome" class="form-control form-control-lg bg-light" value="" required>
+                    <label for="nome" class="form-label">Nome do eleitor</label>
+                    <input type="text" id="nome" name="nome" class="form-control form-control-lg bg-light" value="" required>
                 </div>
 
-                <div class="mb-3 col-sm-6">
-                    <label for="sexo" class="form-label fw-bold">Sexo</label>
-                    <select name="sexo" id="sexo" class="form-select form-select-lg bg-light">
-                        <option value="">--</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                    </select>
+                <div class="mb-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" id="cpf" name="cpf" class="form-control form-control-lg bg-light" value="" maxlength="11" minlength="11" required>
                 </div>
 
-                <div class="mb-3 col-sm-6">
-                    <label for="idade" class="form-label fw-bold">Idade</label>
-                    <input type="text" name="idade" class="form-control form-control-lg bg-light" value="" required>
+                <div class="mb-3">
+                    <label for="idade" class="form-label">Idade</label>
+                    <input type="text" id="idade" name="idade" class="form-control form-control-lg bg-light" value="" required>
+                </div>
+                <div class="mb-3">
+                    <label for="888">
+                        <img src="img/Bill.jpg" width="80px" alt="">
+                        <input type="radio" id="888" name="candidato" value="1">
+                        Bill Gates
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label for="999">
+                        <img src="img/mark.jpg" width="80px" alt="">
+                        <input type="radio" id="999" name="candidato" value="2">
+                        Mark Zuckerberg
+                    </label>
                 </div>
 
-                <div class="mb-3 col-sm-6">
-                    <label for="peso" class="form-label fw-bold">Informe seu peso (kg)</label>
-                    <input type="text" name="peso" class="form-control form-control-lg bg-light" value="" required>
+                <div class="d-grid mb-4">
+                    <input type="submit" value="Votar" class="btn btn-primary btn-lg">
                 </div>
-
-                <div class="mb-3 col-sm-6">
-                    <label for="altura" class="form-label fw-bold">Informe sua altura (metro e cm)</label>
-                    <input type="text" name="altura" class="form-control form-control-lg bg-light" value="" required>
                 </div>
-            </div>
-            <div class="d-grid mb-4">
-                <input type="submit" value="Calcular" class="btn btn-primary btn-lg">
-            </div>
-            <?php if(isset($usuario) && empty($usuario->erro)){ ?>
-            <div class="alert text-center fs-4 <?php echo $class; ?>" role="alert">
-                <span class="d-block fw-bold">IMC: <?php echo round ($usuario->getImc(),2); ?></span>
-                <span><?php echo $usuario->getMsg(); ?></span>
-            </div>
-            <?php } ?>
         </form>
+
+        <a href="http://localhost/relatorio.php" class="btn btn-primary btn-lg form-control form-control-lg">Ver relatorio</a>
+
+
     </div>
-    
-    <?php if($usuarioDao->readUsuario()) { ?>
-        <div class="container">
-        <h1>Registros</h1>
-        <table class="table table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nome</th>                  
-                    <th>Sexo</th>                  
-                    <th>Idade</th>                  
-                    <th>Peso</th>                  
-                    <th>Altura</th>                  
-                    <th>IMC</th>                  
-                    <th>Data Registro</th>                  
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach($usuarioDao->readUsuario() as $usuarios){ ?>
-                <tr>
-                    <td><?php echo $usuarios["nome"]; ?></td>
-                    <td><?php echo $usuarios["sexo"]; ?></td>
-                    <td><?php echo $usuarios["idade"]; ?></td>
-                    <td><?php echo $usuarios["peso"]; ?></td>
-                    <td><?php echo $usuarios["altura"]; ?></td>
-                    <td><?php echo $usuarios["imc"]; ?></td>
-                    <td><?php echo date('d/m/Y', strtotime($usuarios["data_registro"])); ?></td>
-                </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-        </div>
-        <?php } ?>
+    <!-- <?php if (isset($usuario) && empty($usuario->erro)) { ?>
+                    <div class="alert text-center fs-4 <?php echo $class; ?>" role="alert">
+                        <span class="d-block fw-bold">IMC: <?php echo round($usuario->getCandidato(), 2); ?></span>
+                        <span><?php echo $usuario->getMsg(); ?></span>
+                    </div>
+                <?php } ?> -->
+    </form>
+    </div>
 
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>

@@ -6,14 +6,12 @@ class ControllerUsuario
 {
     public function createUsuario(Usuario $usuario){
         try{
-            $insertUsuario = "INSERT INTO usuarios (nome, sexo, idade, peso, altura, imc) VALUES (:nome, :sexo, :idade, :peso, :altura, :imc)";
+            $insertUsuario = "INSERT INTO usuarios (nome, cpf, idade, candidato) VALUES (:nome, :cpf, :idade, :candidato)";
             $stmt = ConexaoDB::getConn()->prepare($insertUsuario);
             $stmt->bindValue(':nome', $usuario->getNome());
-            $stmt->bindValue(':sexo', $usuario->getSexo());
+            $stmt->bindValue(':cpf', $usuario->getCpf());
             $stmt->bindValue(':idade', $usuario->getIdade());
-            $stmt->bindValue(':peso', $usuario->getPeso());
-            $stmt->bindValue(':altura', $usuario->getAltura());
-            $stmt->bindValue(':imc', $usuario->getImc());
+            $stmt->bindValue(':candidato', $usuario->getCandidato());
             $stmt->execute();
         }catch(PDOException $e){
             echo $e->getMessage();

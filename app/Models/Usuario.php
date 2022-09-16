@@ -4,21 +4,18 @@ class Usuario
 {
     private $id;
     private $nome;
-    private $sexo;
+    private $cpf;
     private $idade;
-    private $peso;
-    private $altura;
-    private $imc;
+    private $candidato;
     private $msg;
     public $erro = [];
 
-    public function __construct($nome, $sexo, $idade, $peso, $altura)
+    public function __construct($nome, $cpf, $idade, $candidato)
     {
         $this->nome = $nome;
-        $this->sexo = $sexo;
+        $this->cpf = $cpf;
         $this->idade = $idade;
-        $this->peso = $peso;
-        $this->altura = $altura;
+        $this->candidato = $candidato;
     }
 
     public function getId()
@@ -37,13 +34,13 @@ class Usuario
     {
         $this->nome = $nome;
     }
-    public function getSexo()
+    public function getCpf()
     {
-        return $this->sexo;
+        return $this->cpf;
     }
-    public function setSexo($sexo)
+    public function setCPF($cpf)
     {
-        $this->sexo = $sexo;
+        $this->cpf = $cpf;
     }
     public function getIdade()
     {
@@ -53,64 +50,31 @@ class Usuario
     {
         $this->idade = $idade;
     }
-    public function getPeso()
+    public function getCandidato()
     {
-        return $this->peso;
-    }
-    public function setPeso($peso)
-    {
-        $this->peso = $peso;
-    }
-    public function getAltura()
-    {
-        return $this->altura;
-    }
-    public function setAltura($altura)
-    {
-        $this->altura = $altura;
-    }
-    public function getImc()
-    {
-        return $this->imc;
+        return $this->candidato;
     }
     public function getMsg()
     {
         return $this->msg;
     }
 
-    public function validarDados()
+    public function validarVotacao()
     {
         if (empty($this->nome)){
             $this->erro["erro_nome"] = "O campo nome está vazio";
         }
-        if ($this->idade < 0 || $this->idade > 120 || !is_numeric($this->idade)){
+
+        $this->cpf = str_replace(",", ".", $this->cpf);
+
+        if(!is_numeric($this->cpf)){
+            $this->erro["erro_cpf"] = "O cpf deve ser número";
+        }
+
+        if ($this->idade < 16 || !is_numeric($this->idade)){
             $this->erro["erro_idade"] = "Idade Inválida!";
         }
-        $this->peso = str_replace(",", ".", $this->peso);
-        if(!is_numeric($this->peso)){
-            $this->erro["erro_peso"] = "O peso deve ser número";
-        }
-        $this->altura = str_replace(",", ".", $this->altura);
-        if(!is_numeric($this->altura)){
-            $this->erro["erro_altura"] = "A altura deve ser número";
-        }
-        if (empty($this->erro)){
-            $this->imc = $this->peso / pow($this->altura, 2);
-
-            if ($this->imc < 18.5) {
-                $this->msg = "Abaixo do peso";
-            } elseif ($this->imc >= 18.5 && $this->imc <= 24.9) {
-                $this->msg = "Peso Normal";
-            } elseif ($this->imc >= 25 && $this->imc <= 29.9) {
-                $this->msg = "Sobrepeso";
-            } elseif ($this->imc >= 30 && $this->imc <= 34.9) {
-                $this->msg = "Obesidade grau I";
-            } elseif ($this->imc >= 35 && $this->imc <= 39.9) {
-                $this->msg = "Obesidade grau II (Severa)";
-            } else {
-                $this->msg = "Obesidade grau III (Mórbida)";
-            }
-        }
+        
     }
 }
 
